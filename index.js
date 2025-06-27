@@ -1,6 +1,14 @@
 const express = require("express")
+const morgan = require("morgan")
+
+// CONFIGURE SERVER
 const app = express()
+const PORT = 3001
+
+// CONFIGURE MIDDLEWARE
+morgan.token("req-body", (req, res) => JSON.stringify(req.body))
 app.use(express.json())
+app.use(morgan(":method :url :status :res[content-length] - :response-time ms :req-body"))
 
 let people = [
     { 
@@ -51,6 +59,7 @@ app.get("/api/info", (req, res) => {
 
 // ADD NEW PERSON
 app.post("/api/persons", (req, res) => {
+  console.log(req.body)
   if (!req.body.name) {
     return res.status(400).json({"error": "no name provided"})
   } else if (!req.body.number) {
@@ -89,5 +98,4 @@ app.delete("/api/persons/:id", (req, res) => {
   }
 })
 
-const PORT = 3001
 app.listen(PORT, () => console.log("Server listening on port " + PORT))
